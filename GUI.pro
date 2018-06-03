@@ -28,14 +28,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         gui.cpp \
-    apiconnection.cpp \
-    restconnection.cpp \
     mynetworkclass.cpp
 
 HEADERS += \
         gui.h \
-    apiconnection.h \
-    restconnection.h \
     mynetworkclass.h
 
 FORMS += \

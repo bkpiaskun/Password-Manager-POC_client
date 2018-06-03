@@ -25,8 +25,11 @@ private slots:
     void on_gotolog_4_clicked();
 
     void on_gotolog_3_clicked();
-    void dataInDaHouse(QByteArray data);
 
+    void dataInDaHouse(QByteArray data);
+    void PasswordsReady(QByteArray PassData);
+
+    void on_Delete_2_clicked();
 
 private:
     Ui::gui *ui;

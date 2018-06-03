@@ -1,7 +1,11 @@
 #include "gui.h"
 #include "ui_gui.h"
-#include <restconnection.h>
+
 #include <windows.h>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
 
 gui::gui(QWidget *parent) :
     QMainWindow(parent),
@@ -9,6 +13,8 @@ gui::gui(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(&NetworkConnection,SIGNAL(dataReadyToRead(QByteArray)),this,SLOT(dataInDaHouse(QByteArray)));
+
+    connect(&NetworkConnection,SIGNAL(PassesDownloaded(QByteArray)),this,SLOT(PasswordsReady(QByteArray)));
 
 }
 
@@ -88,6 +94,7 @@ void gui::dataInDaHouse(QByteArray data)
 {
     QString dataString;
     dataString = data;
+
 }
 /*
 void gui::moveToPasswords()
@@ -96,8 +103,59 @@ void gui::moveToPasswords()
 }
 */
 
+void gui::PasswordsReady(QByteArray PassData)
+{
+    QString dataString;
+    dataString = PassData;
+    //ui->tableView
+    //ui->tableView
+    //qDebug() << dataString;
+    QJsonDocument doc = QJsonDocument::fromJson(PassData);
+    qDebug() << doc;
+
+    QJsonArray arr = doc.array();
+    /*qDebug() << "Pass_ID"           << arr.at(1).toObject().value("Pass_ID").toString();
+    qDebug() << "Destination_User"  << arr.at(1).toObject().value("Destination_User").toString();
+    qDebug() << "Destination"       << arr.at(1).toObject().value("Destination").toString();
+    qDebug() << "Hashed_Password"   << arr.at(1).toObject().value("Hashed_Password").toString();
+    qDebug() << arr.size();
+*/
+    QJsonObject obj = doc.object();
+    //doc.setObject(obj);
+    //qDebug() << obj;
+
+
+
+    //qDebug() << dest.size() << dest.count();
+    //qDebug() << obj.size() << obj.count();
+    //qDebug() << obj.length();
+
+    for(int i =0;i<arr.size();i++)
+    {
+        qDebug() << "Pass_ID"           << arr.at(i).toObject().value("Pass_ID").toString();
+        qDebug() << "Destination_User"  << arr.at(i).toObject().value("Destination_User").toString();
+        qDebug() << "Destination"       << arr.at(i).toObject().value("Destination").toString();
+        qDebug() << "Hashed_Password"   << arr.at(i).toObject().value("Hashed_Password").toString();
+    }
+
+
+}
 
 
 
 
 
+void gui::on_Delete_2_clicked()
+{
+    NetworkConnection.GetPasswords(ui->lineEdit->text(), ui->lineEdit_2->text(), ui->lineEdit_3->text());
+
+    if(NetworkConnection.isLogged() == 1)
+    {
+        ui->stackedWidget->setCurrentIndex(1);
+    }
+    else if(NetworkConnection.isLogged() == -1)
+    {
+        ui->textBrowser->setText("Błąd logowania");
+    }
+
+}
