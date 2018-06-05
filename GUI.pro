@@ -28,11 +28,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         gui.cpp \
-    mynetworkclass.cpp
+    networkconnection.cpp \
+    simplecrypt.cpp
 
 HEADERS += \
         gui.h \
-    mynetworkclass.h
+    networkconnection.h \
+    simplecrypt.h
 
 FORMS += \
         gui.ui

@@ -7,11 +7,11 @@
 #include <QNetworkReply>
 #include <QNetworkCookieJar>
 
-class MyNetworkClass : public QObject
+class NetworkConnection : public QObject
 {
     Q_OBJECT
 public:
-    explicit MyNetworkClass(QObject *parent = nullptr);
+    explicit NetworkConnection(QObject *parent = nullptr);
     void Login(QString Login,QString Password,QString URL);
     void Register(QString Login,QString Password,QString URL);
     void GetPasswords(QString Login,QString Password,QString URL);

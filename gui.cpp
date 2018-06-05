@@ -114,21 +114,15 @@ void gui::PasswordsReady(QByteArray PassData)
     qDebug() << doc;
 
     QJsonArray arr = doc.array();
-    /*qDebug() << "Pass_ID"           << arr.at(1).toObject().value("Pass_ID").toString();
+    /*
+    qDebug() << "Pass_ID"           << arr.at(1).toObject().value("Pass_ID").toString();
     qDebug() << "Destination_User"  << arr.at(1).toObject().value("Destination_User").toString();
     qDebug() << "Destination"       << arr.at(1).toObject().value("Destination").toString();
     qDebug() << "Hashed_Password"   << arr.at(1).toObject().value("Hashed_Password").toString();
     qDebug() << arr.size();
-*/
+    */
     QJsonObject obj = doc.object();
-    //doc.setObject(obj);
-    //qDebug() << obj;
 
-
-
-    //qDebug() << dest.size() << dest.count();
-    //qDebug() << obj.size() << obj.count();
-    //qDebug() << obj.length();
 
     for(int i =0;i<arr.size();i++)
     {
@@ -137,6 +131,11 @@ void gui::PasswordsReady(QByteArray PassData)
         qDebug() << "Destination"       << arr.at(i).toObject().value("Destination").toString();
         qDebug() << "Hashed_Password"   << arr.at(i).toObject().value("Hashed_Password").toString();
     }
+    // ###########################################################################
+    //
+    // ############################## HANDLING PASSWORDS #########################
+    //
+    // ###########################################################################
 
 
 }

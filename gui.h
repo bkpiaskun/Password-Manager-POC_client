@@ -2,7 +2,7 @@
 #define GUI_H
 
 #include <QMainWindow>
-#include "mynetworkclass.h"
+#include "networkconnection.h"
 
 namespace Ui {
 class gui;
@@ -34,7 +34,7 @@ private slots:
 private:
     Ui::gui *ui;
     QString Login,Password,URL,User_ID;
-    MyNetworkClass NetworkConnection;
+    NetworkConnection NetworkConnection;
 };
 
 #endif // GUI_H

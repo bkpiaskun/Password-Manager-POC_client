@@ -1,13 +1,13 @@
-#include "mynetworkclass.h"
+#include "networkconnection.h"
 #include <QJsonDocument>
 #include <QNetworkCookie>
 
-MyNetworkClass::MyNetworkClass(QObject *parent) : QObject(parent)
+NetworkConnection::NetworkConnection(QObject *parent) : QObject(parent)
 {
     connect(qnam,SIGNAL(finished(QNetworkReply*)),this,SLOT(readRead(QNetworkReply*)));
     qnam->setCookieJar(this->jar);
 }
-void MyNetworkClass::Login(QString Login,QString Password,QString URL)
+void NetworkConnection::Login(QString Login,QString Password,QString URL)
 {
     QVariantMap feed;
     feed.insert("login",Login);
@@ -22,7 +22,7 @@ void MyNetworkClass::Login(QString Login,QString Password,QString URL)
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     qnam->post(request,payload);
 }
-void MyNetworkClass::Register(QString Login,QString Password,QString URL)
+void NetworkConnection::Register(QString Login,QString Password,QString URL)
 {
     QVariantMap feed;
     feed.insert("login",Login);
@@ -38,7 +38,7 @@ void MyNetworkClass::Register(QString Login,QString Password,QString URL)
     qnam->setCookieJar(this->jar);
     qnam->post(request,payload);
 }
-void MyNetworkClass::GetPasswords(QString Login,QString Password,QString URL)
+void NetworkConnection::GetPasswords(QString Login,QString Password,QString URL)
 {
     QVariantMap feed;
     feed.insert("login",Login);
@@ -55,7 +55,7 @@ void MyNetworkClass::GetPasswords(QString Login,QString Password,QString URL)
     qnam->post(request,payload);
 }
 
-void MyNetworkClass::readRead(QNetworkReply *reply)
+void NetworkConnection::readRead(QNetworkReply *reply)
 {
     if(reply->request().url().path() == "/app_login")
     {
@@ -110,22 +110,22 @@ void MyNetworkClass::readRead(QNetworkReply *reply)
 
 
 }
-int MyNetworkClass::isLogged()
+int NetworkConnection::isLogged()
 {
     return LogStatus;
 }
-void MyNetworkClass::logOut()
+void NetworkConnection::logOut()
 {
     this->LogStatus = 0;
     this->RegStatus = 0;
     this->DownloadStatus = 0;
 }
-int MyNetworkClass::isRegistered()
+int NetworkConnection::isRegistered()
 {
     return RegStatus;
 }
 
-int MyNetworkClass::isDownloaded()
+int NetworkConnection::isDownloaded()
 {
     return DownloadStatus;
 }
