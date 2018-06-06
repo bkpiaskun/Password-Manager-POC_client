@@ -35,7 +35,7 @@ private slots:
 
 
 
-
+    void clearPasswords();
 
     void on_Add_clicked();
 
@@ -46,6 +46,7 @@ private slots:
     void on_Refresh_clicked();
 
 private:
+    QStringList Passwords;
     Ui::gui *ui;
     QString Login,Password,URL,User_ID,Hashed_Pass;
     uint Encryption_Token;

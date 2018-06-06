@@ -185,36 +185,26 @@ void gui::PasswordsReady(QByteArray PassData)
 
 
     for(int i =0;i<arr.size();i++)
-    {
+    {/*
         qDebug() << "Pass_ID"           << arr.at(i).toObject().value("Pass_ID").toString();
         qDebug() << "Destination_User"  << arr.at(i).toObject().value("Destination_User").toString();
         qDebug() << "Destination"       << arr.at(i).toObject().value("Destination").toString();
         qDebug() << "Hashed_Password"   << arr.at(i).toObject().value("Hashed_Password").toString();
-
+    */
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-        int x = ui->tableWidget->rowCount() -1;
+        //int x = ui->tableWidget->rowCount() -1;
+
+        this->Passwords.append(arr.at(i).toObject().value("Pass_ID").toString());
+        this->Passwords.append(arr.at(i).toObject().value("Destination_User").toString());
+        this->Passwords.append(arr.at(i).toObject().value("Destination").toString());
+        this->Passwords.append(arr.at(i).toObject().value("Hashed_Password").toString());
         ui->tableWidget->setItem(i,0,new QTableWidgetItem(arr.at(i).toObject().value("Hashed_Password").toString()));
         ui->tableWidget->setItem(i,1,new QTableWidgetItem(arr.at(i).toObject().value("Destination_User").toString()));
         ui->tableWidget->setItem(i,2,new QTableWidgetItem(arr.at(i).toObject().value("Destination").toString()));
     }
-
-
-
-
-
-    // ###########################################################################
-    //
-    // ############################## HANDLING PASSWORDS #########################
-    //
-    // ###########################################################################
-
-
 }
 void gui::RegisteredIn(bool status)
 {
-
-
-    //this->User_ID =
     if(status)
     {
         ui->stackedWidget->setCurrentIndex(1);
@@ -222,10 +212,6 @@ void gui::RegisteredIn(bool status)
     } else {
         ui->Status_pusty->setText("Błąd rejestracji!");
     }
-
-
-
-
 }
 void gui::LoggedIn(bool status)
 {
@@ -255,6 +241,11 @@ void gui::AddedPassword()
     ui->Status_pusty_3->setText("Hasło Dodanie Pomyślnie.");
 }
 
+void gui::clearPasswords()
+{
+
+}
+
 
 void gui::on_Cancel_clicked()
 {
@@ -263,7 +254,11 @@ void gui::on_Cancel_clicked()
 
 void gui::on_Delete_clicked()
 {
-
+while(!ui->tableWidget->selectedItems().empty())
+{
+    for(int x=0;x<ui->tableWidget->selectedItems().count();x++)
+    ui->tableWidget->removeRow(ui->tableWidget->selectedItems().at(x)->row());
+}
 }
 
 void gui::on_Refresh_clicked()
@@ -294,16 +289,3 @@ void gui::on_Refresh_clicked()
 
 
 
-
-/*
- *     NetworkConnection.GetPasswords(ui->lineEdit->text(), ui->lineEdit_2->text(), ui->lineEdit_3->text());
-
-    if(NetworkConnection.isLogged() == 1)
-    {
-        ui->stackedWidget->setCurrentIndex(1);
-    }
-    else if(NetworkConnection.isLogged() == -1)
-    {
-        //ui->textBrowser->setText("Błąd logowania");
-    }
-*/
