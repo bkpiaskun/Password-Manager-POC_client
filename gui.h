@@ -28,8 +28,21 @@ private slots:
 
     void dataInDaHouse(QByteArray data);
     void PasswordsReady(QByteArray PassData);
+    void RegisteredIn(QByteArray PassData);
+    void LoggedIn(QByteArray PassData);
+    void ModifiedPassword(QByteArray PassData);
+    void RemovedPassword(QByteArray PassData);
+    void AddedPassword(QByteArray PassData);
+
+
+
+
+
+
 
     void on_Delete_2_clicked();
+
+    void on_Add_clicked();
 
 private:
     Ui::gui *ui;

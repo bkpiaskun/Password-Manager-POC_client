@@ -15,6 +15,16 @@ public:
     void Login(QString Login,QString Password,QString URL);
     void Register(QString Login,QString Password,QString URL);
     void GetPasswords(QString Login,QString Password,QString URL);
+
+    void RemovePassword(QString Login,QString Password,int Pass_ID,QString URL);
+    void ModifyPassword(QString Login,QString Password,int Pass_ID,QString Dest,QString Dest_User,QString Pass,QString URL);
+    void AddPassword(QString Login,QString Password,QString Dest,QString Dest_User,QString Pass,QString URL);
+
+
+
+    int isAdded();
+    int isModified();
+    int isRemoved();
     int isLogged();
     int isRegistered();
     int isDownloaded();
@@ -23,13 +33,17 @@ public:
 
 signals:
 
-void dataReadyToRead(QByteArray);
 void PassesDownloaded(QByteArray);
+void Registered(QByteArray);
+void Logged(QByteArray);
+void Modified(QByteArray);
+void Removed(QByteArray);
+void Added(QByteArray);
 
 
 public slots:
 
-void readRead(QNetworkReply *reply);
+void ResponseReady(QNetworkReply *reply);
 
 
 private:
@@ -37,7 +51,11 @@ QNetworkAccessManager *qnam = new QNetworkAccessManager(this);
 QNetworkCookieJar *jar = new QNetworkCookieJar(this);
 int LogStatus = 0;
 int RegStatus = 0;
-int DownloadStatus =0;
+int DownloadStatus = 0;
+int RemoveStatus = 0;
+int ModifyStatus = 0;
+int AddingStatus = 0;
+
 };
 
 #endif // MYNETWORKCLASS_H
