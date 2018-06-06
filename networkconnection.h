@@ -34,8 +34,8 @@ public:
 signals:
 
 void PassesDownloaded(QByteArray);
-void Registered(QByteArray);
-void Logged(QByteArray);
+void Registered(bool);
+void Logged(bool);
 void Modified(QByteArray);
 void Removed(QByteArray);
 void Added(QByteArray);

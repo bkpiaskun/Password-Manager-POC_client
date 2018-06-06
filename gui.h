@@ -26,27 +26,29 @@ private slots:
 
     void on_gotolog_3_clicked();
 
-    void dataInDaHouse(QByteArray data);
     void PasswordsReady(QByteArray PassData);
-    void RegisteredIn(QByteArray PassData);
-    void LoggedIn(QByteArray PassData);
-    void ModifiedPassword(QByteArray PassData);
-    void RemovedPassword(QByteArray PassData);
-    void AddedPassword(QByteArray PassData);
+    void RegisteredIn(bool status);
+    void LoggedIn(bool status);
+    void ModifiedPassword();
+    void RemovedPassword();
+    void AddedPassword();
 
 
 
 
-
-
-
-    void on_Delete_2_clicked();
 
     void on_Add_clicked();
 
+    void on_Cancel_clicked();
+
+    void on_Delete_clicked();
+
+    void on_Refresh_clicked();
+
 private:
     Ui::gui *ui;
-    QString Login,Password,URL,User_ID;
+    QString Login,Password,URL,User_ID,Hashed_Pass;
+    uint Encryption_Token;
     NetworkConnection NetworkConnection;
 };
 

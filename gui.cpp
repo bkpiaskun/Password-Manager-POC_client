@@ -5,6 +5,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <simplecrypt.h>
+#include <QString>
+#include <QByteArray>
 
 
 gui::gui(QWidget *parent) :
@@ -14,11 +17,11 @@ gui::gui(QWidget *parent) :
     ui->setupUi(this);
 
     connect(&NetworkConnection,SIGNAL(PassesDownloaded(QByteArray)),this,SLOT(PasswordsReady(QByteArray)));
-    connect(&NetworkConnection,SIGNAL(Removed(QByteArray)),this,SLOT(RemovedPassword(QByteArray)));
-    connect(&NetworkConnection,SIGNAL(Modified(QByteArray)),this,SLOT(ModifiedPassword(QByteArray)));
-    connect(&NetworkConnection,SIGNAL(Added(QByteArray)),this,SLOT(AddedPassword(QByteArray)));
-    connect(&NetworkConnection,SIGNAL(Registered(QByteArray)),this,SLOT(RegisteredIn(QByteArray)));
-    connect(&NetworkConnection,SIGNAL(Logged(QByteArray)),this,SLOT(LoggedIn(QByteArray)));
+    connect(&NetworkConnection,SIGNAL(Removed(QByteArray)),this,SLOT(RemovedPassword()));
+    connect(&NetworkConnection,SIGNAL(Modified(QByteArray)),this,SLOT(ModifiedPassword()));
+    connect(&NetworkConnection,SIGNAL(Added(QByteArray)),this,SLOT(AddedPassword()));
+    connect(&NetworkConnection,SIGNAL(Registered(bool)),this,SLOT(RegisteredIn(bool)));
+    connect(&NetworkConnection,SIGNAL(Logged(bool)),this,SLOT(LoggedIn(bool)));
 
 
 
@@ -47,50 +50,79 @@ gui::~gui()
 void gui::on_gotoreg_1_clicked()
 {
      ui->stackedWidget->setCurrentIndex(2);
+
 }
 void gui::on_gotohasla_2_clicked()
 {
     //QByteArray hash = QCryptographicHash::​hash(s.toLocal8bit(), QCryptographicHash::Md5);
-    NetworkConnection.Login(ui->lineEdit->text(), ui->lineEdit_2->text(), ui->lineEdit_3->text());
+    NetworkConnection.Login(ui->lineEdit->text(), QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512), ui->lineEdit_3->text());
+    this->Login = ui->lineEdit->text();
+    this->Password = ui->lineEdit_2->text();
+    this->Hashed_Pass = QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
+    //    this->Hashed_Pass = QCryptographicHash::​hash(ui->lineEdit->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
+    this->URL = ui->lineEdit_3->text();
+    this->Encryption_Token = qHash(Password);
 }
 
 void gui::on_gotolog_4_clicked()
 {
     NetworkConnection.logOut();
+    ui->tableWidget->clear();
+    while(ui->tableWidget->rowCount() > 0)
+    {
+        ui->tableWidget->removeRow(ui->tableWidget->rowCount()-1);
+    }
     ui->stackedWidget->setCurrentIndex(0);
+    ui->tableWidget->setColumnCount(3);
+    QStringList labels;
+    labels.append("Domena");
+    labels.append("Użytkownik");
+    labels.append("Hasło");
+    ui->tableWidget->setHorizontalHeaderLabels(labels);
+    for(int c =0; c< ui->tableWidget->horizontalHeader()->count();++c)
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(c,QHeaderView::Stretch);
+
+    for(int i = 1; i <= ui->tableWidget->columnCount() -1;i++)
+    {
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() -1,i,new QTableWidgetItem(QString::number(i)));
+    }
 }
 void gui::on_gotolog_3_clicked()
 {
-    if(ui->lineEdit_13->text() == ui->lineEdit_11->text())
+    this->Login = ui->lineEdit->text();
+    this->Password = ui->lineEdit_2->text();
+    this->Hashed_Pass = QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
+    //    this->Hashed_Pass = QCryptographicHash::​hash(ui->lineEdit->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
+    this->URL = ui->lineEdit_3->text();
+    this->Encryption_Token = qHash(Password);
+
+    if(ui->lineEdit_13->text() == ui->lineEdit_11->text() && ui->lineEdit_13->text().length() >2)
     {
-        NetworkConnection.Register(ui->lineEdit_12->text(), ui->lineEdit_13->text(), ui->lineEdit_10->text());
+        //NetworkConnection.Register(ui->lineEdit_12->text(), QCryptographicHash::​hash((ui->lineEdit_13->text()).toLocal8Bit().constData(), QCryptographicHash::Sha512), ui->lineEdit_10->text());
+        NetworkConnection.Register(ui->lineEdit_12->text(), QCryptographicHash::hash(ui->lineEdit_13->text().toLocal8Bit().constData(),QCryptographicHash::Sha512),ui->lineEdit_10->text());
+        //NetworkConnection.Register(ui->lineEdit_12->text(), ui->lineEdit_13->text(),ui->lineEdit_10->text());
+        //    this->Hashed_Pass = QCryptographicHash::hash(ui->lineEdit->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
+
+        ui->lineEdit_6->setStyleSheet("QLineEdit { background: rgb(255, 255, 255); selection-background-color: rgb(255, 255, 255); }");
+        ui->Status_pusty->setText("");
     }
     else
     {
+
+        ui->lineEdit_6->setStyleSheet("QLineEdit { background: rgb(255, 60, 60); selection-background-color: rgb(255, 60, 60); }");
+        ui->Status_pusty->setText("Hasła nie takie same lub zbyt krótkie!");
+
+
+
+
         //highlight()
         //status.hasla nie takie same
     }
 }
 
 
-void gui::on_Delete_2_clicked()
-{
-    NetworkConnection.GetPasswords(ui->lineEdit->text(), ui->lineEdit_2->text(), ui->lineEdit_3->text());
 
-    if(NetworkConnection.isLogged() == 1)
-    {
-        ui->stackedWidget->setCurrentIndex(1);
-    }
-    else if(NetworkConnection.isLogged() == -1)
-    {
-        //ui->textBrowser->setText("Błąd logowania");
-    }
 
-}
-void gui::on_Cancel_clicked()
-{
-    ui->stackedWidget->setCurrentIndex(0);
-}
 void gui::on_Add_clicked()
 {
     if(ui->lineEdit_4->text().length() <3 )
@@ -121,6 +153,9 @@ void gui::on_Add_clicked()
         ui->tableWidget->setItem(x,0,new QTableWidgetItem(ui->lineEdit_4->text()));
         ui->tableWidget->setItem(x,1,new QTableWidgetItem(ui->lineEdit_5->text()));
         ui->tableWidget->setItem(x,2,new QTableWidgetItem(ui->lineEdit_6->text()));
+
+        NetworkConnection.AddPassword(this->Login, QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512),ui->lineEdit_6->text(),ui->lineEdit_5->text(),ui->lineEdit_4->text(),this->URL);
+
     }
 }
 
@@ -155,7 +190,18 @@ void gui::PasswordsReady(QByteArray PassData)
         qDebug() << "Destination_User"  << arr.at(i).toObject().value("Destination_User").toString();
         qDebug() << "Destination"       << arr.at(i).toObject().value("Destination").toString();
         qDebug() << "Hashed_Password"   << arr.at(i).toObject().value("Hashed_Password").toString();
+
+        ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+        int x = ui->tableWidget->rowCount() -1;
+        ui->tableWidget->setItem(i,0,new QTableWidgetItem(arr.at(i).toObject().value("Hashed_Password").toString()));
+        ui->tableWidget->setItem(i,1,new QTableWidgetItem(arr.at(i).toObject().value("Destination_User").toString()));
+        ui->tableWidget->setItem(i,2,new QTableWidgetItem(arr.at(i).toObject().value("Destination").toString()));
     }
+
+
+
+
+
     // ###########################################################################
     //
     // ############################## HANDLING PASSWORDS #########################
@@ -164,24 +210,100 @@ void gui::PasswordsReady(QByteArray PassData)
 
 
 }
-void gui::RegisteredIn(QByteArray PassData)
+void gui::RegisteredIn(bool status)
 {
-    ui->Status_pusty->setText("Zarejestrowano Pomyślnie");
+
+
+    //this->User_ID =
+    if(status)
+    {
+        ui->stackedWidget->setCurrentIndex(1);
+        ui->Status_pusty->setText("Zarejestrowano Pomyślnie");
+    } else {
+        ui->Status_pusty->setText("Błąd rejestracji!");
+    }
+
+
+
+
 }
-void gui::LoggedIn(QByteArray PassData)
+void gui::LoggedIn(bool status)
 {
-    ui->stackedWidget->setCurrentIndex(1);
+    //this->User_ID =
+    if(status)
+    {
+        ui->stackedWidget->setCurrentIndex(1);
+        ui->labelOfStatus->setText("Status: ");
+        NetworkConnection.GetPasswords(this->Login,this->Hashed_Pass,this->URL);
+
+
+
+    } else {
+        ui->labelOfStatus->setText("Status: Błąd logowania!");
+    }
 }
-void gui::ModifiedPassword(QByteArray PassData)
+void gui::ModifiedPassword()
 {
     ui->Status_pusty_3->setText("Hasła Zapisane Pomyślnie.");
 }
-void gui::RemovedPassword(QByteArray PassData)
+void gui::RemovedPassword()
 {
     ui->Status_pusty_3->setText("Hasło Usunięte Pomyślnie.");
 }
-void gui::AddedPassword(QByteArray PassData)
+void gui::AddedPassword()
 {
     ui->Status_pusty_3->setText("Hasło Dodanie Pomyślnie.");
 }
 
+
+void gui::on_Cancel_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+void gui::on_Delete_clicked()
+{
+
+}
+
+void gui::on_Refresh_clicked()
+{
+    NetworkConnection.logOut();
+    ui->tableWidget->clear();
+    while(ui->tableWidget->rowCount() > 0)
+    {
+        ui->tableWidget->removeRow(ui->tableWidget->rowCount()-1);
+    }
+    ui->tableWidget->setColumnCount(3);
+    QStringList labels;
+    labels.append("Domena");
+    labels.append("Użytkownik");
+    labels.append("Hasło");
+    ui->tableWidget->setHorizontalHeaderLabels(labels);
+    for(int c =0; c< ui->tableWidget->horizontalHeader()->count();++c)
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(c,QHeaderView::Stretch);
+
+    for(int i = 1; i <= ui->tableWidget->columnCount() -1;i++)
+    {
+        ui->tableWidget->setItem(ui->tableWidget->rowCount() -1,i,new QTableWidgetItem(QString::number(i)));
+    }
+
+    NetworkConnection.Login(this->Login,this->Hashed_Pass,this->URL);
+}
+
+
+
+
+
+/*
+ *     NetworkConnection.GetPasswords(ui->lineEdit->text(), ui->lineEdit_2->text(), ui->lineEdit_3->text());
+
+    if(NetworkConnection.isLogged() == 1)
+    {
+        ui->stackedWidget->setCurrentIndex(1);
+    }
+    else if(NetworkConnection.isLogged() == -1)
+    {
+        //ui->textBrowser->setText("Błąd logowania");
+    }
+*/

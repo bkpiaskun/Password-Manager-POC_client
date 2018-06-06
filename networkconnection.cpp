@@ -107,7 +107,7 @@ void NetworkConnection::AddPassword(QString Login, QString Password, QString Des
     QUrl myurl;
     myurl.setScheme("http"); //https also applicable
     myurl.setHost(URL);
-    myurl.setPath("/app_addd_pass");
+    myurl.setPath("/app_add_pass");
     QNetworkRequest request;
     request.setUrl(myurl);
     request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
@@ -160,16 +160,16 @@ void NetworkConnection::ResponseReady(QNetworkReply *reply)
     if(reply->request().url().path() == "/app_login")
     {
     qDebug() << reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toString();
+
     if(reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toInt() == 200)
     {
         LogStatus = 1;
+        emit(Logged(true));
     } else {
         LogStatus = -1;
+        emit(Logged(false));
     }
-
-    QByteArray myData;
-    myData = reply->readAll();
-    emit(Logged(myData));
+        //emit(Logged(false));
     }
     if(reply->request().url().path() == "/app_register")
     {
@@ -177,13 +177,12 @@ void NetworkConnection::ResponseReady(QNetworkReply *reply)
     if(reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toInt() == 200)
     {
         RegStatus = 1;
-
+        emit(Registered(true));
     } else {
         RegStatus = -1;
+        emit(Registered(false));
     }
-    QByteArray myData;
-    myData = reply->readAll();
-    emit(Registered(myData));
+
     }
 
     if(reply->request().url().path() == "/app_getpasswords")
