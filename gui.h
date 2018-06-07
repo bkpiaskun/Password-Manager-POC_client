@@ -35,8 +35,6 @@ private slots:
 
 
 
-    void clearPasswords();
-
     void on_Add_clicked();
 
     void on_Cancel_clicked();
@@ -44,6 +42,8 @@ private slots:
     void on_Delete_clicked();
 
     void on_Refresh_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     QStringList Passwords;

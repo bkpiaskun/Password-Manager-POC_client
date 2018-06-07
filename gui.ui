@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>462</width>
-    <height>206</height>
+    <width>691</width>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -5093,6 +5093,28 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>lineEdit_2</tabstop>
+  <tabstop>lineEdit_3</tabstop>
+  <tabstop>gotohasla_2</tabstop>
+  <tabstop>gotoreg_1</tabstop>
+  <tabstop>lineEdit_6</tabstop>
+  <tabstop>lineEdit_5</tabstop>
+  <tabstop>lineEdit_4</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>Refresh</tabstop>
+  <tabstop>gotolog_4</tabstop>
+  <tabstop>Add</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>lineEdit_12</tabstop>
+  <tabstop>lineEdit_13</tabstop>
+  <tabstop>lineEdit_11</tabstop>
+  <tabstop>lineEdit_10</tabstop>
+  <tabstop>Cancel</tabstop>
+  <tabstop>gotolog_3</tabstop>
+  <tabstop>Delete</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

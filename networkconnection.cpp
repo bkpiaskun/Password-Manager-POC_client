@@ -159,7 +159,6 @@ void NetworkConnection::ResponseReady(QNetworkReply *reply)
 {
     if(reply->request().url().path() == "/app_login")
     {
-    qDebug() << reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toString();
 
     if(reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toInt() == 200)
     {
@@ -173,7 +172,6 @@ void NetworkConnection::ResponseReady(QNetworkReply *reply)
     }
     if(reply->request().url().path() == "/app_register")
     {
-    qDebug() << reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toString();
     if(reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toInt() == 200)
     {
         RegStatus = 1;
@@ -187,7 +185,6 @@ void NetworkConnection::ResponseReady(QNetworkReply *reply)
 
     if(reply->request().url().path() == "/app_getpasswords")
     {
-    qDebug() << reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toString();
     if(reply->attribute((QNetworkRequest::HttpStatusCodeAttribute)).toInt() == 200)
     {
         DownloadStatus = 1;
@@ -197,13 +194,8 @@ void NetworkConnection::ResponseReady(QNetworkReply *reply)
     }
     QByteArray myData;
     myData = reply->readAll();
-    //reply->re
     QString asd = myData;
     QJsonDocument doc = QJsonDocument::fromJson(myData);
-    /*qDebug() <<doc;
-    qDebug() << asd;
-    qDebug() << endl;
-    qDebug() << endl;*/
     emit(PassesDownloaded(myData));
     }
 

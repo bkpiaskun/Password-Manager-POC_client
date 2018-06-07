@@ -54,12 +54,10 @@ void gui::on_gotoreg_1_clicked()
 }
 void gui::on_gotohasla_2_clicked()
 {
-    //QByteArray hash = QCryptographicHash::​hash(s.toLocal8bit(), QCryptographicHash::Md5);
     NetworkConnection.Login(ui->lineEdit->text(), QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512), ui->lineEdit_3->text());
     this->Login = ui->lineEdit->text();
     this->Password = ui->lineEdit_2->text();
     this->Hashed_Pass = QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
-    //    this->Hashed_Pass = QCryptographicHash::​hash(ui->lineEdit->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
     this->URL = ui->lineEdit_3->text();
     this->Encryption_Token = qHash(Password);
 }
@@ -92,17 +90,12 @@ void gui::on_gotolog_3_clicked()
     this->Login = ui->lineEdit->text();
     this->Password = ui->lineEdit_2->text();
     this->Hashed_Pass = QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
-    //    this->Hashed_Pass = QCryptographicHash::​hash(ui->lineEdit->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
     this->URL = ui->lineEdit_3->text();
     this->Encryption_Token = qHash(Password);
 
     if(ui->lineEdit_13->text() == ui->lineEdit_11->text() && ui->lineEdit_13->text().length() >2)
     {
-        //NetworkConnection.Register(ui->lineEdit_12->text(), QCryptographicHash::​hash((ui->lineEdit_13->text()).toLocal8Bit().constData(), QCryptographicHash::Sha512), ui->lineEdit_10->text());
         NetworkConnection.Register(ui->lineEdit_12->text(), QCryptographicHash::hash(ui->lineEdit_13->text().toLocal8Bit().constData(),QCryptographicHash::Sha512),ui->lineEdit_10->text());
-        //NetworkConnection.Register(ui->lineEdit_12->text(), ui->lineEdit_13->text(),ui->lineEdit_10->text());
-        //    this->Hashed_Pass = QCryptographicHash::hash(ui->lineEdit->text().toLocal8Bit().constData(),QCryptographicHash::Sha512);
-
         ui->lineEdit_6->setStyleSheet("QLineEdit { background: rgb(255, 255, 255); selection-background-color: rgb(255, 255, 255); }");
         ui->Status_pusty->setText("");
     }
@@ -111,12 +104,6 @@ void gui::on_gotolog_3_clicked()
 
         ui->lineEdit_6->setStyleSheet("QLineEdit { background: rgb(255, 60, 60); selection-background-color: rgb(255, 60, 60); }");
         ui->Status_pusty->setText("Hasła nie takie same lub zbyt krótkie!");
-
-
-
-
-        //highlight()
-        //status.hasla nie takie same
     }
 }
 
@@ -150,11 +137,20 @@ void gui::on_Add_clicked()
     {
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());
         int x = ui->tableWidget->rowCount() -1;
-        ui->tableWidget->setItem(x,0,new QTableWidgetItem(ui->lineEdit_4->text()));
+        ui->tableWidget->setItem(x,0,new QTableWidgetItem(ui->lineEdit_6->text()));
         ui->tableWidget->setItem(x,1,new QTableWidgetItem(ui->lineEdit_5->text()));
-        ui->tableWidget->setItem(x,2,new QTableWidgetItem(ui->lineEdit_6->text()));
+        ui->tableWidget->setItem(x,2,new QTableWidgetItem(ui->lineEdit_4->text()));
+        this->Passwords.append(0);
+        this->Passwords.append(ui->lineEdit_5->text());
+        this->Passwords.append(ui->lineEdit_6->text());
+        this->Passwords.append(ui->lineEdit_4->text());
 
-        NetworkConnection.AddPassword(this->Login, QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512),ui->lineEdit_6->text(),ui->lineEdit_5->text(),ui->lineEdit_4->text(),this->URL);
+
+        SimpleCrypt crypto;
+        crypto.setKey(this->Encryption_Token);
+
+        NetworkConnection.AddPassword(this->Login, QCryptographicHash::hash(ui->lineEdit_2->text().toLocal8Bit().constData(),QCryptographicHash::Sha512),ui->lineEdit_6->text(),ui->lineEdit_5->text(),crypto.encryptToString(ui->lineEdit_4->text()),this->URL);
+
 
     }
 }
@@ -167,40 +163,21 @@ void gui::PasswordsReady(QByteArray PassData)
 {
     QString dataString;
     dataString = PassData;
-    //ui->tableView
-    //ui->tableView
-    //qDebug() << dataString;
     QJsonDocument doc = QJsonDocument::fromJson(PassData);
-    qDebug() << doc;
-
     QJsonArray arr = doc.array();
-    /*
-    qDebug() << "Pass_ID"           << arr.at(1).toObject().value("Pass_ID").toString();
-    qDebug() << "Destination_User"  << arr.at(1).toObject().value("Destination_User").toString();
-    qDebug() << "Destination"       << arr.at(1).toObject().value("Destination").toString();
-    qDebug() << "Hashed_Password"   << arr.at(1).toObject().value("Hashed_Password").toString();
-    qDebug() << arr.size();
-    */
     QJsonObject obj = doc.object();
-
-
     for(int i =0;i<arr.size();i++)
-    {/*
-        qDebug() << "Pass_ID"           << arr.at(i).toObject().value("Pass_ID").toString();
-        qDebug() << "Destination_User"  << arr.at(i).toObject().value("Destination_User").toString();
-        qDebug() << "Destination"       << arr.at(i).toObject().value("Destination").toString();
-        qDebug() << "Hashed_Password"   << arr.at(i).toObject().value("Hashed_Password").toString();
-    */
+    {
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-        //int x = ui->tableWidget->rowCount() -1;
-
+        SimpleCrypt crypto;
+        crypto.setKey(this->Encryption_Token);
         this->Passwords.append(arr.at(i).toObject().value("Pass_ID").toString());
         this->Passwords.append(arr.at(i).toObject().value("Destination_User").toString());
         this->Passwords.append(arr.at(i).toObject().value("Destination").toString());
         this->Passwords.append(arr.at(i).toObject().value("Hashed_Password").toString());
-        ui->tableWidget->setItem(i,0,new QTableWidgetItem(arr.at(i).toObject().value("Hashed_Password").toString()));
+        ui->tableWidget->setItem(i,2,new QTableWidgetItem(crypto.decryptToString(arr.at(i).toObject().value("Hashed_Password").toString())));
         ui->tableWidget->setItem(i,1,new QTableWidgetItem(arr.at(i).toObject().value("Destination_User").toString()));
-        ui->tableWidget->setItem(i,2,new QTableWidgetItem(arr.at(i).toObject().value("Destination").toString()));
+        ui->tableWidget->setItem(i,0,new QTableWidgetItem(arr.at(i).toObject().value("Destination").toString()));
     }
 }
 void gui::RegisteredIn(bool status)
@@ -215,7 +192,6 @@ void gui::RegisteredIn(bool status)
 }
 void gui::LoggedIn(bool status)
 {
-    //this->User_ID =
     if(status)
     {
         ui->stackedWidget->setCurrentIndex(1);
@@ -241,11 +217,6 @@ void gui::AddedPassword()
     ui->Status_pusty_3->setText("Hasło Dodanie Pomyślnie.");
 }
 
-void gui::clearPasswords()
-{
-
-}
-
 
 void gui::on_Cancel_clicked()
 {
@@ -254,11 +225,19 @@ void gui::on_Cancel_clicked()
 
 void gui::on_Delete_clicked()
 {
-while(!ui->tableWidget->selectedItems().empty())
-{
-    for(int x=0;x<ui->tableWidget->selectedItems().count();x++)
-    ui->tableWidget->removeRow(ui->tableWidget->selectedItems().at(x)->row());
-}
+    while(!ui->tableWidget->selectedItems().empty())
+    {
+        for(int x=0;x<ui->tableWidget->selectedItems().count();x++)
+        {
+            NetworkConnection.RemovePassword(this->Login,this->Hashed_Pass,    this->Passwords.at(ui->tableWidget->selectedItems().at(x)->row()*4).toInt()    ,this->URL);
+
+            this->Passwords.removeAt(ui->tableWidget->selectedItems().at(x)->row());
+            this->Passwords.removeAt(ui->tableWidget->selectedItems().at(x)->row()+1);
+            this->Passwords.removeAt(ui->tableWidget->selectedItems().at(x)->row()+2);
+            this->Passwords.removeAt(ui->tableWidget->selectedItems().at(x)->row()+3);
+            ui->tableWidget->removeRow(ui->tableWidget->selectedItems().at(x)->row());
+        }
+    }
 }
 
 void gui::on_Refresh_clicked()
@@ -282,10 +261,31 @@ void gui::on_Refresh_clicked()
     {
         ui->tableWidget->setItem(ui->tableWidget->rowCount() -1,i,new QTableWidgetItem(QString::number(i)));
     }
-
+    this->Passwords = QStringList();
     NetworkConnection.Login(this->Login,this->Hashed_Pass,this->URL);
 }
 
 
 
 
+
+void gui::on_pushButton_clicked()
+{
+
+        for(int x=0;x<ui->tableWidget->selectedItems().count();x++)
+        {
+
+            SimpleCrypt crypto;
+            crypto.setKey(this->Encryption_Token);
+            QString basepass = ui->tableWidget->model()->data(ui->tableWidget->model()->index(ui->tableWidget->selectedItems().at(x)->row(),2)).toString();
+            QString encryptedpass = crypto.encryptToString(basepass);
+            NetworkConnection.ModifyPassword(this->Login,
+                                             this->Hashed_Pass,
+                                             this->Passwords.at(ui->tableWidget->selectedItems().at(x)->row()*4).toInt(),
+                                             ui->tableWidget->model()->data(ui->tableWidget->model()->index(ui->tableWidget->selectedItems().at(x)->row(),0)).toString(),
+                                             ui->tableWidget->model()->data(ui->tableWidget->model()->index(ui->tableWidget->selectedItems().at(x)->row(),1)).toString(),
+                                             encryptedpass,
+                                             this->URL);
+            NetworkConnection.RemovePassword(this->Login,this->Hashed_Pass,this->Passwords.at(ui->tableWidget->selectedItems().at(x)->row()*4).toInt(),this->URL);
+        }
+}
